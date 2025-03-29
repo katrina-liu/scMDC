@@ -64,10 +64,10 @@ if __name__ == "__main__":
     print(args)
     
     data_mat = h5py.File(args.data_file)
-    x1 = np.array(data_mat['X1'])
-    x2 = np.array(data_mat['X2'])
+    x1 = np.array(data_mat['X1'],dtype=np.float32)
+    x2 = np.array(data_mat['X2'],dtype=np.float32)
     if not args.no_labels:
-         y = np.array(data_mat['Y'])
+         y = np.array(data_mat['Y'],dtype=np.float32)
     data_mat.close()
 
     #Gene filter
