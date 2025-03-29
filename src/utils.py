@@ -12,6 +12,7 @@ import torch.nn as nn
 import torch.nn.init as init
 import torch.utils.data as data
 from sklearn.neighbors import kneighbors_graph
+from munkres import Munkres
 
 def cluster_acc(y_true, y_pred):
     """
