@@ -164,7 +164,7 @@ if __name__ == "__main__":
     
     if args.prediction_file:
        if not args.no_labels:
-             y_pred_ = best_map(y, y_pred) - 1
+             y_pred_ = best_map(y, y_pred)
              np.savetxt(args.save_dir + "/" + str(args.run) + "_pred.csv", y_pred_, delimiter=",")
        else:
              np.savetxt(args.save_dir + "/" + str(args.run) + "_pred.csv", y_pred, delimiter=",")
