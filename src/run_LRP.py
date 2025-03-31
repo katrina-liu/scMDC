@@ -73,8 +73,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(args)
     data_mat = h5py.File(args.data_file)
-    x1 = np.array(data_mat['X1'])
-    x2 = np.array(data_mat['X2'])
+    x1 = np.array(data_mat['X1'], dtype=np.float32)
+    x2 = np.array(data_mat['X2'],dtype=np.float32)
     #y = np.array(data_mat['Y']) - 1
     data_mat.close()
     
