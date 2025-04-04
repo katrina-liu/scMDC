@@ -60,6 +60,8 @@ if __name__ == "__main__":
     parser.add_argument('--run', default=1, type=int)
     parser.add_argument('--device', default='cuda')
     parser.add_argument('--no_labels', action='store_true', default=False)
+    parser.add_argument('--interpret', action='store_true', default=False)
+
     args = parser.parse_args()
     print(args)
     
@@ -140,6 +142,18 @@ if __name__ == "__main__":
             raise ValueError
     
     print('Pretraining time: %d seconds.' % int(time() - t0))
+
+    if args.interpret:
+        def f(X):
+            return model.encodeBatch(torch.tensor(X[:,:input_size1]).to(args.device), 
+        torch.tensor(X[:,input_size1:]).to(args.device)).cpu().numpy()
+        X_all = torch.cat([torch.tensor(adata1.X).to(args.device),
+                        torch.tensor(adata2.X).to(args.device)], axis=1).cpu().numpy()
+        explainer = shap.KernelExplainer(f,X_all[:10,:])
+        shap_values = explainer(X_all[:10, :])
+        print("set up explainer")
+        shap.plots.bar(shap_values)
+        sys.exit()
     
     #get k
     latent = model.encodeBatch(torch.tensor(adata1.X).to(args.device), torch.tensor(adata2.X).to(args.device))
