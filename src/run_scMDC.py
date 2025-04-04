@@ -144,20 +144,25 @@ if __name__ == "__main__":
             print("==> no checkpoint found at '{}'".format(args.ae_weights))
             raise ValueError
     
-    print('Pretraining time: %d seconds.' % int(time() - t0))
 
-    if args.interpret:
-        def f(X):
-            return model.encodeBatch(torch.tensor(X[:,:input_size1]).to(args.device), 
-        torch.tensor(X[:,input_size1:]).to(args.device)).cpu().numpy()
-        X_all = torch.cat([torch.tensor(adata1.X).to(args.device),
-                        torch.tensor(adata2.X).to(args.device)], axis=1).cpu().numpy()
-        explainer = shap.KernelExplainer(f,X_all[:10,:])
-        shap_values = explainer(X_all[:10, :])
-        print("set up explainer")
-        shap.plots.bar(shap_values)
-        sys.exit()
+    print('Pretraining time: %d seconds.' % int(time() - t0))
     
+    if args.interpret:
+      def f(X):
+        return model.encodeBatch(torch.tensor(X[:,:input_size1]).to(args.device), 
+        torch.tensor(X[:,input_size1:]).to(args.device)).cpu().numpy()
+      X_all = torch.cat([torch.tensor(adata1.X).to(args.device),
+                        torch.tensor(adata2.X).to(args.device)], axis=1).cpu().numpy()
+      explainer = shap.KernelExplainer(f,X_all[:10,:], 
+                            feature_names=list(range(X_all.shape[1])))
+      shap_values = explainer.shap_values(X_all[11, :], nsamples=500)
+      print("set up explainer")
+      print(type(explainer.expected_value))
+      print(type(shap_values))
+      print(len(explainer.expected_value), len(shap_values))
+      shap.plots.force(explainer.expected_value, shap_values)
+      sys.exit()
+
     #get k
     latent = model.encodeBatch(torch.tensor(adata1.X).to(args.device), torch.tensor(adata2.X).to(args.device))
     latent = latent.cpu().numpy()
