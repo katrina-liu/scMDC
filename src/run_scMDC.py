@@ -18,6 +18,9 @@ import scanpy as sc
 from preprocess import read_dataset, normalize, clr_normalize_each_cell
 from utils import *
 
+import sys
+import shap
+
 if __name__ == "__main__":
 
     # setting the hyper parameters
