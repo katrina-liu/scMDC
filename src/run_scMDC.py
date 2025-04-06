@@ -79,8 +79,10 @@ if __name__ == "__main__":
     if args.filter1:
         importantGenes = geneSelection(x1, n=args.f1, plot=False)
         x1 = x1[:, importantGenes]
+        np.savetxt(args.save_dir + "/" + str(args.run) + "exp_important_genes.csv", importantGenes, delimiter=",")
     if args.filter2:
         importantGenes = geneSelection(x2, n=args.f2, plot=False)
+        np.savetxt(args.save_dir + "/" + str(args.run) + "atac_important_genes.csv", importantGenes, delimiter=",")
         x2 = x2[:, importantGenes]
         
     # preprocessing scRNA-seq read counts matrix
@@ -153,14 +155,16 @@ if __name__ == "__main__":
         torch.tensor(X[:,input_size1:]).to(args.device)).cpu().numpy()
       X_all = torch.cat([torch.tensor(adata1.X).to(args.device),
                         torch.tensor(adata2.X).to(args.device)], axis=1).cpu().numpy()
-      explainer = shap.KernelExplainer(f,X_all[:10,:], 
+      explainer = shap.KernelExplainer(f,shap.utils.sample(X_all,100, 42), 
                             feature_names=list(range(X_all.shape[1])))
-      shap_values = explainer.shap_values(X_all[11, :], nsamples=500)
+      shap_values = explainer.shap_values(shap.utils.sample(X_all,200, 21), 
+                        nsamples=500)
       print("set up explainer")
       print(type(explainer.expected_value))
       print(type(shap_values))
       print(len(explainer.expected_value), len(shap_values))
-      shap.plots.force(explainer.expected_value, shap_values)
+      np.savez(args.save_dir+"/shap_expected.npz", explainer.expected_value)
+      np.savez(args.save_dir+"/shap_values.npz", shap_values)
       sys.exit()
 
     #get k
