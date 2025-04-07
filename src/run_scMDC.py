@@ -74,7 +74,9 @@ if __name__ == "__main__":
     if not args.no_labels:
          y = np.array(data_mat['Y'],dtype=np.float32)
     data_mat.close()
-
+    if not os.path.exists(args.save_dir):
+        os.makedirs(args.save_dir)
+    
     #Gene filter
     if args.filter1:
         importantGenes = geneSelection(x1, n=args.f1, plot=False)
@@ -129,9 +131,7 @@ if __name__ == "__main__":
     
     print(str(model))
     
-    if not os.path.exists(args.save_dir):
-            os.makedirs(args.save_dir)
-            
+     
     t0 = time()
     if args.ae_weights is None:
         model.pretrain_autoencoder(X1=adata1.X, X_raw1=adata1.raw.X, sf1=adata1.obs.size_factors, 
